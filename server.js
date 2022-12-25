@@ -1,27 +1,47 @@
 const express = require("express");
-const socketIO = require("socket.io");
-const http = require("http");
-const port = process.env.PORT || 3000;
-let app = express();
-let server = http.createServer(app);
-let io = socketIO(server);
+const socketServer = new Server({ port: 443 });
+const server = express()
+ 
+const { Server } = require("ws");
 
-io.on("connection", (socket) => {
-  console.log("New user Connected");
-
-  socket.emit('newMessage', {
-    from: 'moses@m1',
-    text: 'hepppp',
-    createdAt: 123
-  });
-
-  socket.on('createMessage',(newMessage) => {
-    console.log('newMessage', newMessage);
-  });
-
-  socket.on('disconected',() => {
-    console.log('disconnected from user');
-  });
+socketServer.on("connection", (ws) => {
+  console.log("New Client Connected!");
+  ws.on("close", () => console.log("Client has disconnected!"));
 });
 
-server.listen(port);
+setInterval(() => {
+  socketServer.client.forEach((client) => {
+    const data = JSON.stringify({
+      type: "time",
+      time: new Date().toTimeString(),
+    });
+
+    client.send(data);
+  });
+}, 1000);
+
+setInterval(() => {
+  socketserver.clients.forEach((client) => {
+    const messages = [
+      "Hello",
+      "What do you ponder?",
+      "Thank you for your time",
+      "Be Mindful",
+      "Thank You",
+    ];
+    const random = Math.floor(Math.random() * messages.length);
+    let position = {
+      X: Math.floor(Math.Random() * 200),
+      y: Math.floor(Math.Random() * 150),
+    };
+    const data = JSON.Stringify({
+      type: "message",
+      message: messages[random],
+      position: position,
+    });
+    client.send(data);
+  });
+}, 8000);
+
+
+  .listen(3000, () => console.log(`lISTENING ON ${3000}`));
